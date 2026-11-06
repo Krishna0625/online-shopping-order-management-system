@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Product | Online Shopping System{% endblock %}
+{% block page_title %}Edit Product #{{ product.id }}{% endblock %}
+{% block page_subtitle %}Update product name, description, unit price, or available stock quantity{% endblock %}
+
+{% block content %}
+<div class="panel-card" style="max-width: 680px; margin: 0 auto;">
+    <div class="panel-header">
+        <div class="panel-header-title">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <h3>Update Product: {{ product.name }}</h3>
+        </div>
+        <span class="roll-badge">Product ID #{{ product.id }}</span>
+    </div>
+
+    <div class="panel-body">
+        <form method="POST" action="{{ url_for('edit_product', product_id=product.id) }}" class="portal-form">
+            <div class="form-field">
+                <label for="name">Product Name</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="{{ product.name }}"
+                    required
+                >
+            </div>
+
+            <div class="form-field">
+                <label for="description">Product Description</label>
+                <textarea
+                    id="description"
+                    name="description"
+                    required
+                >{{ product.description }}</textarea>
+            </div>
+
+            <div class="form-field">
+                <label for="price">Unit Price (&#8377;)</label>
+                <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    step="0.01"
+                    min="0.01"
+                    value="{{ '%.2f'|format(product.price) }}"
+                    required
+                >
+            </div>
+
+            <div class="form-field">
+                <label for="stock">Stock Quantity</label>
+                <input
+                    type="number"
+                    id="stock"
+                    name="stock"
+                    min="0"
+                    step="1"
+                    value="{{ product.stock }}"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span>Update Product</span>
+            </button>
+
+            <a href="{{ url_for('admin_dashboard') }}" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px;">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Cancel &amp; Return to Dashboard</span>
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

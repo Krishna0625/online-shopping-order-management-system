@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Add Product | Online Shopping System{% endblock %}
+{% block page_title %}Add New Product{% endblock %}
+{% block page_subtitle %}Create a new product listing with price and stock quantity validation{% endblock %}
+
+{% block content %}
+<div class="page-split-layout">
+    <!-- Left Card: Add Product Form -->
+    <div class="panel-card">
+        <div class="panel-header">
+            <div class="panel-header-title">
+                <i class="fa-solid fa-box-open"></i>
+                <h3>New Product Details</h3>
+            </div>
+        </div>
+        <div class="panel-body">
+            <form method="POST" action="{{ url_for('add_product') }}" class="portal-form">
+                <div class="form-field">
+                    <label for="name">Product Name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="e.g., Wireless Bluetooth Speaker"
+                        required
+                    >
+                </div>
+
+                <div class="form-field">
+                    <label for="description">Product Description</label>
+                    <textarea
+                        id="description"
+                        name="description"
+                        placeholder="Enter clear product specifications and features..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-field">
+                    <label for="price">Unit Price (&#8377;)</label>
+                    <input
+                        type="number"
+                        id="price"
+                        name="price"
+                        step="0.01"
+                        min="0.01"
+                        placeholder="e.g., 1499.00"
+                        required
+                    >
+                </div>
+
+                <div class="form-field">
+                    <label for="stock">Stock Quantity</label>
+                    <input
+                        type="number"
+                        id="stock"
+                        name="stock"
+                        min="0"
+                        step="1"
+                        placeholder="e.g., 25"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Save Product to Catalogue</span>
+                </button>
+
+                <a href="{{ url_for('admin_dashboard') }}" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px;">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Back to Admin Dashboard</span>
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Card: Existing Catalogue Preview -->
+    <div class="panel-card">
+        <div class="panel-header">
+            <div class="panel-header-title">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <h3>Existing Store Catalogue ({{ products | length }})</h3>
+            </div>
+            <div class="search-box-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                    type="text"
+                    class="search-input"
+                    placeholder="Filter products..."
+                    data-search-target="add-page-products-table"
+                >
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="portal-table" id="add-page-products-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in products %}
+                    <tr class="data-row">
+                        <td><span class="roll-badge">#{{ p.id }}</span></td>
+                        <td><strong>{{ p.name }}</strong></td>
+                        <td>&#8377;{{ "%.2f"|format(p.price) }}</td>
+                        <td>
+                            {% if p.stock > 0 %}
+                                <span class="status-badge good">{{ p.stock }} units</span>
+                            {% else %}
+                                <span class="status-badge low">Out of stock</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('edit_product', product_id=p.id) }}" class="btn-table-sm edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                                <span>Edit</span>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="no-search-results" style="display: none;">
+                        <td colspan="5" class="empty-state">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <p>No matching products found.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

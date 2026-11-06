@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Order History | Online Shopping System{% endblock %}
+{% block page_title %}My Order History{% endblock %}
+{% block page_subtitle %}Personal purchase history for {{ session.get('user_name') }} ({{ session.get('user_email') }}){% endblock %}
+
+{% block content %}
+<div class="panel-card">
+    <div class="panel-header">
+        <div class="panel-header-title">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <h3>Your Past Orders ({{ orders | length }})</h3>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <div class="search-box-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                    type="text"
+                    class="search-input"
+                    placeholder="Filter orders by ID, product, or date..."
+                    data-search-target="customer-orders-table"
+                >
+            </div>
+            <a href="{{ url_for('products') }}" class="btn-action primary">
+                <i class="fa-solid fa-plus"></i>
+                <span>New Order</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="portal-table" id="customer-orders-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Order Date</th>
+                    <th>Ordered Products &amp; Quantities</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Receipt</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in orders %}
+                <tr class="data-row">
+                    <td><span class="roll-badge">#{{ o.id }}</span></td>
+                    <td>{{ o.order_date }}</td>
+                    <td>
+                        <div class="order-items-list">
+                            {% for item in o['items'] %}
+                            <div class="order-item-chip">
+                                <span><strong>{{ item.product_name }}</strong> (&#8377;{{ "%.2f"|format(item.price) }})</span>
+                                <span class="roll-badge">Qty: {{ item.quantity }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td>
+                        <strong style="font-size: 15px; color: var(--navy-900);">
+                            &#8377;{{ "%.2f"|format(o.total_amount) }}
+                        </strong>
+                    </td>
+                    <td>
+                        <span class="badge-present">
+                            <i class="fa-solid fa-check"></i> {{ o.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('order_confirmation', order_id=o.id) }}" class="btn-table-sm edit">
+                            <i class="fa-solid fa-file-invoice"></i>
+                            <span>View</span>
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="empty-state">
+                        <i class="fa-solid fa-box-open"></i>
+                        <p>You have not placed any orders yet.</p>
+                        <a href="{{ url_for('products') }}" class="btn-action primary">Start Shopping</a>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr class="no-search-results" style="display: none;">
+                    <td colspan="6" class="empty-state">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <p>No matching orders found.</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

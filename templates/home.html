@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Storefront | Online Shopping System{% endblock %}
+{% block page_title %}Customer Shopping Homepage{% endblock %}
+{% block page_subtitle %}Browse verified products, search the catalogue, and manage your shopping cart{% endblock %}
+
+{% block content %}
+<!-- Storefront Hero Banner -->
+<section class="store-hero-banner">
+    <div class="store-hero-text">
+        <span class="hero-pill">
+            <i class="fa-solid fa-star"></i> Official Campus &amp; Tech Storefront
+        </span>
+        <h2>Quality Electronics &amp; Accessories at Transparent Prices</h2>
+        <p>
+            Browse real-time product inventory, add items to your cart, and place instant orders
+            with automated stock verification and complete order tracking.
+        </p>
+        <div class="store-hero-actions">
+            <a href="{{ url_for('products') }}" class="btn-hero-white">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <span>Explore Full Catalogue</span>
+            </a>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('cart') }}" class="btn-hero-outline">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span>View My Cart ({{ cart_count }})</span>
+                </a>
+                <a href="{{ url_for('order_history') }}" class="btn-hero-outline">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>My Orders</span>
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="btn-hero-outline">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Customer Login</span>
+                </a>
+                <a href="{{ url_for('register') }}" class="btn-hero-outline">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Create Account</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Search & Filter Bar -->
+<section class="quick-actions-bar">
+    <div class="quick-actions-title">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <h4>Search Product Catalogue ({{ products | length }} Available)</h4>
+    </div>
+
+    <form method="GET" action="{{ url_for('home') }}" class="search-form-bar">
+        <div class="search-box-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+                type="text"
+                name="q"
+                value="{{ search_query }}"
+                class="search-input"
+                placeholder="Search products by name..."
+                data-card-search-target="home-products-grid"
+            >
+        </div>
+        <button type="submit" class="btn-action primary">
+            <i class="fa-solid fa-Search"></i>
+            <span>Search</span>
+        </button>
+        {% if search_query %}
+        <a href="{{ url_for('home') }}" class="btn-action">
+            <i class="fa-solid fa-rotate-left"></i>
+            <span>Clear</span>
+        </a>
+        {% endif %}
+    </form>
+</section>
+
+<!-- Product Catalogue Cards Grid -->
+<section class="products-grid" id="home-products-grid">
+    {% for p in products %}
+    <div class="product-card">
+        <div class="product-card-top">
+            <div class="product-visual-box">
+                <div class="product-visual-icon">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                {% if p.stock > 5 %}
+                    <span class="status-badge good">
+                        <i class="fa-solid fa-check"></i> In Stock ({{ p.stock }})
+                    </span>
+                {% elif p.stock > 0 %}
+                    <span class="status-badge warning">
+                        <i class="fa-solid fa-bolt"></i> Low Stock ({{ p.stock }} left)
+                    </span>
+                {% else %}
+                    <span class="status-badge low">
+                        <i class="fa-solid fa-xmark"></i> Out of Stock (0)
+                    </span>
+                {% endif %}
+            </div>
+
+            <h3 class="product-title">{{ p.name }}</h3>
+            <p class="product-desc">{{ p.description }}</p>
+        </div>
+
+        <div class="product-card-footer">
+            <div class="product-price-row">
+                <div class="product-price">
+                    &#8377;{{ "%.2f"|format(p.price) }}
+                    <small>/ unit</small>
+                </div>
+                <span class="roll-badge">ID #{{ p.id }}</span>
+            </div>
+
+            {% if p.stock > 0 %}
+            <form method="POST" action="{{ url_for('add_to_cart', product_id=p.id) }}" class="product-cart-form">
+                <input
+                    type="number"
+                    name="quantity"
+                    value="1"
+                    min="1"
+                    max="{{ p.stock }}"
+                    class="qty-input-small"
+                    aria-label="Quantity for {{ p.name }}"
+                >
+                <button type="submit" class="btn-add-cart">
+                    <i class="fa-solid fa-cart-plus"></i>
+                    <span>Add to Cart</span>
+                </button>
+            </form>
+            {% else %}
+            <div class="product-cart-form">
+                <button type="button" class="btn-add-cart" disabled>
+                    <i class="fa-solid fa-ban"></i>
+                    <span>Out of Stock</span>
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div class="panel-card" style="grid-column: 1 / -1;">
+        <div class="empty-state">
+            <i class="fa-solid fa-box-open"></i>
+            <p>No products matched your search "{{ search_query }}".</p>
+            <a href="{{ url_for('home') }}" class="btn-action primary">Show All Products</a>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
+<div id="home-products-grid-empty" class="panel-card" style="display: none;">
+    <div class="empty-state">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <p>No products match your search filter.</p>
+    </div>
+</div>
+{% endblock %}

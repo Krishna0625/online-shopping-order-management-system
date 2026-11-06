@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Orders | Online Shopping System{% endblock %}
+{% block page_title %}Customer Order Management{% endblock %}
+{% block page_subtitle %}View all customer orders, itemized quantities, total amounts, and order statuses{% endblock %}
+
+{% block content %}
+<div class="panel-card">
+    <div class="panel-header">
+        <div class="panel-header-title">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <h3>All Customer Orders ({{ orders | length }})</h3>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <div class="search-box-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                    type="text"
+                    class="search-input"
+                    placeholder="Search orders by ID, customer, or product..."
+                    data-search-target="admin-orders-table"
+                >
+            </div>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn-action">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back to Dashboard</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="portal-table" id="admin-orders-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Order Date</th>
+                    <th>Ordered Products &amp; Quantities</th>
+                    <th>Amount</th>
+                    <th>Order Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in orders %}
+                <tr class="data-row">
+                    <td><span class="roll-badge">#{{ o.id }}</span></td>
+                    <td>
+                        <strong>{{ o.customer_name }}</strong>
+                        <div style="font-size: 12px; color: var(--text-muted);">{{ o.customer_email }}</div>
+                    </td>
+                    <td>{{ o.order_date }}</td>
+                    <td>
+                        <div class="order-items-list">
+                            {% for item in o['items'] %}
+                            <div class="order-item-chip">
+                                <span><strong>{{ item.product_name }}</strong> (&#8377;{{ "%.2f"|format(item.price) }})</span>
+                                <span class="roll-badge">Qty: {{ item.quantity }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td>
+                        <strong style="font-size: 15px; color: var(--navy-900);">
+                            &#8377;{{ "%.2f"|format(o.total_amount) }}
+                        </strong>
+                    </td>
+                    <td>
+                        <span class="badge-present">
+                            <i class="fa-solid fa-check"></i> {{ o.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="empty-state">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                        <p>No customer orders have been placed yet.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr class="no-search-results" style="display: none;">
+                    <td colspan="6" class="empty-state">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <p>No orders matched your search query.</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

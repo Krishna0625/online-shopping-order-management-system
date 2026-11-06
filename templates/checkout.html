@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout | Online Shopping System{% endblock %}
+{% block page_title %}Order Checkout{% endblock %}
+{% block page_subtitle %}Review your final order summary and confirm your purchase{% endblock %}
+
+{% block content %}
+<div class="cart-split-layout">
+    <!-- Left Card: Order Summary Table -->
+    <div class="panel-card">
+        <div class="panel-header">
+            <div class="panel-header-title">
+                <i class="fa-solid fa-clipboard-check"></i>
+                <h3>Order Summary ({{ cart_items | length }} Products)</h3>
+            </div>
+            <a href="{{ url_for('cart') }}" class="btn-action">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span>Modify Cart</span>
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="portal-table">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Unit Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>
+                            <strong>{{ item.name }}</strong>
+                            <div style="font-size: 12px; color: var(--text-muted);">
+                                Available Stock: {{ item.stock }}
+                            </div>
+                        </td>
+                        <td>&#8377;{{ "%.2f"|format(item.price) }}</td>
+                        <td><span class="roll-badge">x {{ item.quantity }}</span></td>
+                        <td><strong>&#8377;{{ "%.2f"|format(item.subtotal) }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Right Card: Customer Details & Confirm Order Action -->
+    <div class="panel-card">
+        <div class="panel-header">
+            <div class="panel-header-title">
+                <i class="fa-solid fa-shield-check"></i>
+                <h3>Confirm Your Order</h3>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="summary-row">
+                <span>Customer Name</span>
+                <strong>{{ session.get('user_name') }}</strong>
+            </div>
+            <div class="summary-row">
+                <span>Registered Email</span>
+                <strong>{{ session.get('user_email') }}</strong>
+            </div>
+            <div class="summary-row">
+                <span>Payment Mode</span>
+                <span class="class-badge">Demonstration Checkout</span>
+            </div>
+            <div class="summary-row">
+                <span>Total Items</span>
+                <strong>{{ cart_count }} units</strong>
+            </div>
+            <div class="summary-row total">
+                <span>Total Payable</span>
+                <span>&#8377;{{ "%.2f"|format(total_amount) }}</span>
+            </div>
+
+            <form method="POST" action="{{ url_for('checkout') }}" style="margin-top: 20px;">
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Confirm Order</span>
+                </button>
+            </form>
+
+            <a href="{{ url_for('cart') }}" class="btn-action" style="width: 100%; justify-content: center; margin-top: 10px;">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Return to Shopping Cart</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

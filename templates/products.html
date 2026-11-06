@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Product Catalogue | Online Shopping System{% endblock %}
+{% block page_title %}Product Catalogue{% endblock %}
+{% block page_subtitle %}Search products by name, check live stock availability, and add items to your cart{% endblock %}
+
+{% block content %}
+<!-- Search & Quick Action Bar -->
+<section class="quick-actions-bar">
+    <div class="quick-actions-title">
+        <i class="fa-solid fa-boxes-stacked"></i>
+        <h4>All Store Products ({{ products | length }})</h4>
+    </div>
+
+    <form method="GET" action="{{ url_for('products') }}" class="search-form-bar">
+        <div class="search-box-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+                type="text"
+                name="q"
+                value="{{ search_query }}"
+                class="search-input"
+                placeholder="Search products by name..."
+                data-card-search-target="catalogue-products-grid"
+            >
+        </div>
+        <button type="submit" class="btn-action primary">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Search</span>
+        </button>
+        {% if search_query %}
+        <a href="{{ url_for('products') }}" class="btn-action">
+            <i class="fa-solid fa-rotate-left"></i>
+            <span>Reset</span>
+        </a>
+        {% endif %}
+        <a href="{{ url_for('cart') }}" class="btn-action">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span>Go to Cart ({{ cart_count }})</span>
+        </a>
+    </form>
+</section>
+
+<!-- Product Cards Grid -->
+<section class="products-grid" id="catalogue-products-grid">
+    {% for p in products %}
+    <div class="product-card">
+        <div class="product-card-top">
+            <div class="product-visual-box">
+                <div class="product-visual-icon">
+                    <i class="fa-solid fa-laptop"></i>
+                </div>
+                {% if p.stock > 5 %}
+                    <span class="status-badge good">
+                        <i class="fa-solid fa-check"></i> Stock: {{ p.stock }}
+                    </span>
+                {% elif p.stock > 0 %}
+                    <span class="status-badge warning">
+                        <i class="fa-solid fa-bolt"></i> Stock: {{ p.stock }}
+                    </span>
+                {% else %}
+                    <span class="status-badge low">
+                        <i class="fa-solid fa-xmark"></i> Out of Stock (0)
+                    </span>
+                {% endif %}
+            </div>
+
+            <h3 class="product-title">{{ p.name }}</h3>
+            <p class="product-desc">{{ p.description }}</p>
+        </div>
+
+        <div class="product-card-footer">
+            <div class="product-price-row">
+                <div class="product-price">
+                    &#8377;{{ "%.2f"|format(p.price) }}
+                    <small>/ unit</small>
+                </div>
+                <span class="roll-badge">Available: {{ p.stock }}</span>
+            </div>
+
+            {% if p.stock > 0 %}
+            <form method="POST" action="{{ url_for('add_to_cart', product_id=p.id) }}" class="product-cart-form">
+                <input
+                    type="number"
+                    name="quantity"
+                    value="1"
+                    min="1"
+                    max="{{ p.stock }}"
+                    class="qty-input-small"
+                    aria-label="Quantity for {{ p.name }}"
+                >
+                <button type="submit" class="btn-add-cart">
+                    <i class="fa-solid fa-cart-plus"></i>
+                    <span>Add to Cart</span>
+                </button>
+            </form>
+            {% else %}
+            <div class="product-cart-form">
+                <button type="button" class="btn-add-cart" disabled>
+                    <i class="fa-solid fa-ban"></i>
+                    <span>Out of Stock</span>
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div class="panel-card" style="grid-column: 1 / -1;">
+        <div class="empty-state">
+            <i class="fa-solid fa-box-open"></i>
+            <p>No products found matching "{{ search_query }}".</p>
+            <a href="{{ url_for('products') }}" class="btn-action primary">View All Products</a>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
+<div id="catalogue-products-grid-empty" class="panel-card" style="display: none;">
+    <div class="empty-state">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <p>No products match your search query.</p>
+    </div>
+</div>
+{% endblock %}

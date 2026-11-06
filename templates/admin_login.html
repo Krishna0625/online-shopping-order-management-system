@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Online Shopping System</title>
+    <!-- Font Awesome 6 Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Common Portal Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-body">
+
+    <div class="login-split-wrapper">
+        <!-- Left Section: Dark Navy-Blue Admin Branding & Visuals -->
+        <section class="login-left-hero">
+            <div class="hero-brand">
+                <div class="hero-brand-icon">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <div class="hero-brand-text">
+                    <span>Enterprise Administration Suite</span>
+                    <h2>Online Shopping &amp; Order System</h2>
+                </div>
+            </div>
+
+            <div class="hero-main-copy">
+                <div class="hero-badge">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Official Store Administration Portal</span>
+                </div>
+                <h1>Manage Inventory, Orders &amp; Store Analytics</h1>
+                <p>
+                    A centralized administration portal to manage product inventory, add or edit store
+                    listings, monitor customer orders, and review real-time sales performance.
+                </p>
+
+                <!-- Decorative CSS-Based Admin Feature Cards -->
+                <div class="hero-illustration-grid">
+                    <div class="hero-feature-card">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <div>
+                            <h4>Product Management</h4>
+                            <p>Add, edit, and delete products with price and stock validation.</p>
+                        </div>
+                    </div>
+
+                    <div class="hero-feature-card">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                        <div>
+                            <h4>Order Monitoring</h4>
+                            <p>Track all customer orders, itemized quantities, and timestamps.</p>
+                        </div>
+                    </div>
+
+                    <div class="hero-feature-card">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <div>
+                            <h4>Live Sales Metrics</h4>
+                            <p>Real-time SQLite counts for products, customers, orders, and revenue.</p>
+                        </div>
+                    </div>
+
+                    <div class="hero-feature-card">
+                        <i class="fa-solid fa-database"></i>
+                        <div>
+                            <h4>Protected Access</h4>
+                            <p>Role-protected routes separate customer and administrator privileges.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-footer">
+                <span><i class="fa-solid fa-building-columns"></i> Department of Computer Science &amp; Engineering</span>
+                <a href="{{ url_for('home') }}"><i class="fa-solid fa-store"></i> Customer Storefront</a>
+            </div>
+        </section>
+
+        <!-- Right Section: Clean White Admin Login Card -->
+        <section class="login-right-panel">
+            <div class="login-form-box">
+                <div class="login-header">
+                    <span class="portal-pill"><i class="fa-solid fa-lock"></i> Administrator Access</span>
+                    <h2>Admin Sign In</h2>
+                    <p>Sign in to access the store administration dashboard</p>
+                </div>
+
+                {% if message %}
+                <div class="alert-banner alert-success success">
+                    <span><i class="fa-solid fa-circle-check"></i> {{ message }}</span>
+                    <button type="button" class="alert-close-btn" aria-label="Dismiss">&times;</button>
+                </div>
+                {% endif %}
+
+                {% if error %}
+                <div class="alert-banner alert-error error">
+                    <span><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</span>
+                    <button type="button" class="alert-close-btn" aria-label="Dismiss">&times;</button>
+                </div>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('admin_login') }}">
+                    <div class="form-group">
+                        <label for="username">Admin Username</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-regular fa-user input-icon"></i>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                placeholder="Enter admin username (e.g., admin)"
+                                autocomplete="username"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-solid fa-key input-icon"></i>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter admin password"
+                                autocomplete="current-password"
+                                required
+                            >
+                            <button
+                                type="button"
+                                class="password-toggle-btn"
+                                aria-label="Show password"
+                                title="Show / Hide Password"
+                            >
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="login-options-row">
+                        <label class="remember-me">
+                            <input type="checkbox" name="remember">
+                            <span>Remember me</span>
+                        </label>
+                        <span class="demo-hint-badge">Demo: admin / admin123</span>
+                    </div>
+
+                    <button type="submit" class="btn-primary-full">
+                        <span>Sign In to Admin Portal</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+
+                <div class="login-panel-footer">
+                    <span class="portal-tag">
+                        <i class="fa-solid fa-user-shield"></i> Admin Portal
+                    </span>
+                    <a href="{{ url_for('login') }}" class="portal-link">
+                        <i class="fa-solid fa-user"></i> Customer Login
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

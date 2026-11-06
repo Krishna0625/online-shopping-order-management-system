@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart | Online Shopping System{% endblock %}
+{% block page_title %}Shopping Cart{% endblock %}
+{% block page_subtitle %}Review selected products, adjust quantities within available stock, and proceed to checkout{% endblock %}
+
+{% block content %}
+<div class="cart-split-layout">
+    <!-- Left Card: Cart Items Table -->
+    <div class="panel-card">
+        <div class="panel-header">
+            <div class="panel-header-title">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <h3>Your Shopping Cart ({{ cart_items | length }} Products)</h3>
+            </div>
+            <a href="{{ url_for('products') }}" class="btn-action">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Continue Shopping</span>
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="portal-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Unit Price</th>
+                        <th>Stock</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>
+                            <strong>{{ item.name }}</strong>
+                            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                                Product ID #{{ item.id }}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="class-badge">&#8377;{{ "%.2f"|format(item.price) }}</span>
+                        </td>
+                        <td>
+                            <span class="roll-badge">{{ item.stock }} available</span>
+                        </td>
+                        <td>
+                            <div class="qty-stepper">
+                                <form method="POST" action="{{ url_for('update_cart', product_id=item.id) }}">
+                                    <input type="hidden" name="action" value="decrease">
+                                    <button type="submit" class="qty-btn" title="Decrease Quantity">
+                                        <i class="fa-solid fa-minus"></i>
+                                    </button>
+                                </form>
+
+                                <span class="qty-value-pill">{{ item.quantity }}</span>
+
+                                <form method="POST" action="{{ url_for('update_cart', product_id=item.id) }}">
+                                    <input type="hidden" name="action" value="increase">
+                                    <button
+                                        type="submit"
+                                        class="qty-btn"
+                                        title="Increase Quantity"
+                                        {% if item.quantity >= item.stock %}disabled{% endif %}
+                                    >
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                        <td>
+                            <strong style="color: var(--navy-900); font-size: 15px;">
+                                &#8377;{{ "%.2f"|format(item.subtotal) }}
+                            </strong>
+                        </td>
+                        <td>
+                            <form method="POST" action="{{ url_for('remove_from_cart', product_id=item.id) }}">
+                                <button type="submit" class="btn-table-sm delete" title="Remove Item">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                    <span>Remove</span>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fa-solid fa-cart-arrow-down"></i>
+                            <p>Your shopping cart is currently empty.</p>
+                            <a href="{{ url_for('products') }}" class="btn-action primary">
+                                <i class="fa-solid fa-boxes-stacked"></i>
+                                <span>Browse Products</span>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Right Card: Cart Total Summary -->
+    <div class="panel-card">
+        <div class="panel-header">
+            <div class="panel-header-title">
+                <i class="fa-solid fa-receipt"></i>
+                <h3>Cart Summary</h3>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="summary-row">
+                <span>Customer</span>
+                <strong>{{ session.get('user_name') }}</strong>
+            </div>
+            <div class="summary-row">
+                <span>Distinct Products</span>
+                <strong>{{ cart_items | length }}</strong>
+            </div>
+            <div class="summary-row">
+                <span>Total Units</span>
+                <strong>{{ cart_count }}</strong>
+            </div>
+            <div class="summary-row">
+                <span>Shipping &amp; Handling</span>
+                <span class="status-badge good">Free</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total Cart Amount</span>
+                <span>&#8377;{{ "%.2f"|format(total_amount) }}</span>
+            </div>
+
+            {% if cart_items %}
+            <a href="{{ url_for('checkout') }}" class="btn-submit" style="margin-top: 18px;">
+                <span>Proceed to Checkout</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            {% else %}
+            <button type="button" class="btn-add-cart" style="width: 100%; margin-top: 18px;" disabled>
+                <span>Cart is Empty</span>
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

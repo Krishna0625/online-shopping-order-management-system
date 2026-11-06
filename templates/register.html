@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Registration | Online Shopping System</title>
+    <!-- Font Awesome 6 Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Common Portal Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-body">
+
+    <div class="login-split-wrapper">
+        <!-- Left Section: Dark Navy-Blue Branding & Visuals -->
+        <section class="login-left-hero">
+            <div class="hero-brand">
+                <div class="hero-brand-icon">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                </div>
+                <div class="hero-brand-text">
+                    <span>E-Commerce &amp; Order Suite</span>
+                    <h2>Online Shopping System</h2>
+                </div>
+            </div>
+
+            <div class="hero-main-copy">
+                <div class="hero-badge">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Instant Customer Enrollment</span>
+                </div>
+                <h1>Create Your Shopping Account Today</h1>
+                <p>
+                    Join our online shopping platform to add products to your cart, complete instant
+                    checkouts, and maintain a secure record of all your orders.
+                </p>
+
+                <!-- Decorative CSS-Based Feature Cards -->
+                <div class="hero-illustration-grid">
+                    <div class="hero-feature-card">
+                        <i class="fa-solid fa-lock"></i>
+                        <div>
+                            <h4>Password Hashing</h4>
+                            <p>Protected with Python cryptographic password hashing.</p>
+                        </div>
+                    </div>
+
+                    <div class="hero-feature-card">
+                        <i class="fa-solid fa-envelope-circle-check"></i>
+                        <div>
+                            <h4>Unique Email Identity</h4>
+                            <p>Prevents duplicate registrations automatically in SQLite.</p>
+                        </div>
+                    </div>
+
+                    <div class="hero-feature-card">
+                        <i class="fa-solid fa-cart-plus"></i>
+                        <div>
+                            <h4>Personalized Cart</h4>
+                            <p>Session-backed shopping cart with real-time subtotal calculation.</p>
+                        </div>
+                    </div>
+
+                    <div class="hero-feature-card">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <div>
+                            <h4>Private Order History</h4>
+                            <p>View your own confirmed orders, dates, and itemized quantities.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-footer">
+                <span><i class="fa-solid fa-building-columns"></i> Department of Computer Science &amp; Engineering</span>
+                <a href="{{ url_for('home') }}"><i class="fa-solid fa-store"></i> Browse Storefront</a>
+            </div>
+        </section>
+
+        <!-- Right Section: Clean White Customer Registration Card -->
+        <section class="login-right-panel">
+            <div class="login-form-box">
+                <div class="login-header">
+                    <span class="portal-pill"><i class="fa-solid fa-id-card"></i> New Customer</span>
+                    <h2>Create Account</h2>
+                    <p>Fill in your details below to register for online shopping</p>
+                </div>
+
+                {% if message %}
+                <div class="alert-banner alert-success success">
+                    <span><i class="fa-solid fa-circle-check"></i> {{ message }}</span>
+                    <button type="button" class="alert-close-btn" aria-label="Dismiss">&times;</button>
+                </div>
+                {% endif %}
+
+                {% if error %}
+                <div class="alert-banner alert-error error">
+                    <span><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</span>
+                    <button type="button" class="alert-close-btn" aria-label="Dismiss">&times;</button>
+                </div>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('register') }}">
+                    <div class="form-group">
+                        <label for="name">Customer Full Name</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-regular fa-user input-icon"></i>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                placeholder="Enter your full name (e.g., Rahul Sharma)"
+                                autocomplete="name"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-regular fa-envelope input-icon"></i>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter your email address"
+                                autocomplete="email"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-solid fa-key input-icon"></i>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Create a password (min. 4 characters)"
+                                autocomplete="new-password"
+                                minlength="4"
+                                required
+                            >
+                            <button
+                                type="button"
+                                class="password-toggle-btn"
+                                aria-label="Show password"
+                                title="Show / Hide Password"
+                            >
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary-full" style="margin-top: 8px;">
+                        <span>Complete Registration</span>
+                        <i class="fa-solid fa-user-check"></i>
+                    </button>
+                </form>
+
+                <div class="auth-switch-box">
+                    Already have an account? <a href="{{ url_for('login') }}">Sign In Here</a>
+                </div>
+
+                <div class="login-panel-footer">
+                    <span class="portal-tag">
+                        <i class="fa-solid fa-shield-halved"></i> Hashed Credentials
+                    </span>
+                    <a href="{{ url_for('home') }}" class="portal-link">
+                        <i class="fa-solid fa-store"></i> Store Home
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

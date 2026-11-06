@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Online Shopping &amp; Order Management System{% endblock %}</title>
+    <!-- Font Awesome 6 Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Common Portal Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {% set is_admin_page = request.path.startswith('/admin') %}
+    <div class="app-shell">
+        <!-- Left Navy-Blue Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-logo">
+                    {% if is_admin_page %}
+                        <i class="fa-solid fa-user-shield"></i>
+                    {% else %}
+                        <i class="fa-solid fa-bag-shopping"></i>
+                    {% endif %}
+                </div>
+                <div class="sidebar-brand-title">
+                    <h2>Online Shopping</h2>
+                    <span>
+                        {% if is_admin_page %}
+                            Store Admin Portal
+                        {% else %}
+                            Order Management System
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                {% if is_admin_page %}
+                    <div class="sidebar-section-label">Admin Modules</div>
+
+                    <a href="{{ url_for('admin_dashboard') }}" class="sidebar-link {% if request.path == '/admin/dashboard' %}active{% endif %}">
+                        <span class="sidebar-link-left">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span>Dashboard &amp; Products</span>
+                        </span>
+                    </a>
+
+                    <a href="{{ url_for('add_product') }}" class="sidebar-link {% if request.path == '/admin/add-product' %}active{% endif %}">
+                        <span class="sidebar-link-left">
+                            <i class="fa-solid fa-box-open"></i>
+                            <span>Add New Product</span>
+                        </span>
+                    </a>
+
+                    <a href="{{ url_for('admin_orders') }}" class="sidebar-link {% if request.path == '/admin/orders' %}active{% endif %}">
+                        <span class="sidebar-link-left">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                            <span>Customer Orders</span>
+                        </span>
+                    </a>
+
+                    <div class="sidebar-section-label">Storefront</div>
+
+                    <a href="{{ url_for('home') }}" class="sidebar-link">
+                        <span class="sidebar-link-left">
+                            <i class="fa-solid fa-store"></i>
+                            <span>View Customer Store</span>
+                        </span>
+                    </a>
+                {% else %}
+                    <div class="sidebar-section-label">Shopping Menu</div>
+
+                    <a href="{{ url_for('home') }}" class="sidebar-link {% if request.path == '/' %}active{% endif %}">
+                        <span class="sidebar-link-left">
+                            <i class="fa-solid fa-house"></i>
+                            <span>Home Storefront</span>
+                        </span>
+                    </a>
+
+                    <a href="{{ url_for('products') }}" class="sidebar-link {% if request.path == '/products' %}active{% endif %}">
+                        <span class="sidebar-link-left">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                            <span>Product Catalogue</span>
+                        </span>
+                    </a>
+
+                    <a href="{{ url_for('cart') }}" class="sidebar-link {% if request.path == '/cart' %}active{% endif %}">
+                        <span class="sidebar-link-left">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            <span>Shopping Cart</span>
+                        </span>
+                        <span class="sidebar-badge">{{ cart_count }}</span>
+                    </a>
+
+                    <a href="{{ url_for('checkout') }}" class="sidebar-link {% if request.path == '/checkout' %}active{% endif %}">
+                        <span class="sidebar-link-left">
+                            <i class="fa-solid fa-credit-card"></i>
+                            <span>Checkout</span>
+                        </span>
+                    </a>
+
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('order_history') }}" class="sidebar-link {% if request.path == '/orders' or request.path.startswith('/order-confirmation') %}active{% endif %}">
+                            <span class="sidebar-link-left">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                                <span>My Order History</span>
+                            </span>
+                        </a>
+                    {% endif %}
+
+                    <div class="sidebar-section-label">Account &amp; Admin</div>
+
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('order_history') }}" class="sidebar-link">
+                            <span class="sidebar-link-left">
+                                <i class="fa-regular fa-id-badge"></i>
+                                <span>{{ session.get('user_name') }}</span>
+                            </span>
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="sidebar-link">
+                            <span class="sidebar-link-left">
+                                <i class="fa-solid fa-right-to-bracket"></i>
+                                <span>Customer Login</span>
+                            </span>
+                        </a>
+
+                        <a href="{{ url_for('register') }}" class="sidebar-link">
+                            <span class="sidebar-link-left">
+                                <i class="fa-solid fa-user-plus"></i>
+                                <span>Customer Register</span>
+                            </span>
+                        </a>
+                    {% endif %}
+
+                    <a href="{{ url_for('admin_dashboard') if session.get('admin') else url_for('admin_login') }}" class="sidebar-link">
+                        <span class="sidebar-link-left">
+                            <i class="fa-solid fa-user-shield"></i>
+                            <span>Admin Portal</span>
+                        </span>
+                    </a>
+                {% endif %}
+            </nav>
+
+            <div class="sidebar-footer">
+                {% if is_admin_page %}
+                    <a href="{{ url_for('admin_logout') }}" class="sidebar-link logout-link">
+                        <span class="sidebar-link-left">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>Admin Logout</span>
+                        </span>
+                    </a>
+                {% elif session.get('user_id') %}
+                    <a href="{{ url_for('logout') }}" class="sidebar-link logout-link">
+                        <span class="sidebar-link-left">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>Customer Logout</span>
+                        </span>
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="sidebar-link">
+                        <span class="sidebar-link-left">
+                            <i class="fa-solid fa-lock"></i>
+                            <span>Sign In to Shop</span>
+                        </span>
+                    </a>
+                {% endif %}
+            </div>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <div class="main-wrapper">
+            <!-- Top Navigation Bar -->
+            <header class="top-navbar">
+                <div class="navbar-left">
+                    <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle Menu">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="page-heading">
+                        <h1>{% block page_title %}Online Shopping Portal{% endblock %}</h1>
+                        <p>{% block page_subtitle %}Professional E-Commerce &amp; Order Management System{% endblock %}</p>
+                    </div>
+                </div>
+
+                <div class="navbar-right">
+                    {% if not is_admin_page %}
+                        <a href="{{ url_for('cart') }}" class="nav-cart-btn" title="View Shopping Cart">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            <span>Cart</span>
+                            <span class="nav-cart-count">{{ cart_count }}</span>
+                        </a>
+                    {% endif %}
+
+                    <div class="datetime-pill">
+                        <span class="date-text">
+                            <i class="fa-regular fa-calendar"></i>
+                            <span id="current-date">Today</span>
+                        </span>
+                        <span>
+                            <i class="fa-regular fa-clock"></i>
+                            <span id="live-clock" class="clock-badge">--:--:--</span>
+                        </span>
+                    </div>
+
+                    {% if is_admin_page %}
+                        <div class="faculty-profile">
+                            <div class="faculty-avatar">
+                                <i class="fa-solid fa-user-shield"></i>
+                            </div>
+                            <div class="faculty-info">
+                                <strong>{{ session.get('admin', 'admin') | capitalize }}</strong>
+                                <small>Store Administrator</small>
+                            </div>
+                        </div>
+                    {% elif session.get('user_id') %}
+                        <div class="faculty-profile">
+                            <div class="faculty-avatar">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <div class="faculty-info">
+                                <strong>{{ session.get('user_name') }}</strong>
+                                <small><a href="{{ url_for('logout') }}" style="color: #dc2626; font-weight: 600;">Logout</a></small>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="faculty-profile">
+                            <a href="{{ url_for('login') }}" class="btn-action">
+                                <i class="fa-solid fa-right-to-bracket"></i>
+                                <span>Login</span>
+                            </a>
+                            <a href="{{ url_for('register') }}" class="btn-action primary">
+                                <i class="fa-solid fa-user-plus"></i>
+                                <span>Register</span>
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </header>
+
+            <!-- Page Body Content -->
+            <main class="page-content">
+                {% if message %}
+                <div class="alert-banner alert-success success">
+                    <span><i class="fa-solid fa-circle-check"></i> {{ message }}</span>
+                    <button type="button" class="alert-close-btn" aria-label="Dismiss">&times;</button>
+                </div>
+                {% endif %}
+
+                {% if error %}
+                <div class="alert-banner alert-error error">
+                    <span><i class="fa-solid fa-triangle-exclamation"></i> {{ error }}</span>
+                    <button type="button" class="alert-close-btn" aria-label="Dismiss">&times;</button>
+                </div>
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
