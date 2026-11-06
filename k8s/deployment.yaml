@@ -1,0 +1,20 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: online-shopping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: online-shopping
+  template:
+    metadata:
+      labels:
+        app: online-shopping
+    spec:
+      containers:
+        - name: online-shopping
+          image: online-shopping:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5001
